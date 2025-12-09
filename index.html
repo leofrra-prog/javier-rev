@@ -2,499 +2,876 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Révision Partiels - Altérité & Nation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>QCM Révision Partiels</title>
     <style>
         :root {
-            --bg-color: #f4f4f9;
+            --bg-color: #f0f2f5;
             --card-bg: #ffffff;
-            --text-color: #333333;
-            --accent-color: #2563eb;
-            --success-color: #10b981;
-            --error-color: #ef4444;
-            --explanation-bg: #e0f2fe;
-            --explanation-text: #0c4a6e;
+            --text-primary: #1c1e21;
+            --text-secondary: #606770;
+            --accent: #1877f2;
+            --success: #42b72a;
+            --error: #fa3e3e;
+            --explanation-bg: #e7f3ff;
         }
 
         body.dark-mode {
-            --bg-color: #111827;
-            --card-bg: #1f2937;
-            --text-color: #f3f4f6;
-            --accent-color: #60a5fa;
-            --success-color: #34d399;
-            --error-color: #f87171;
-            --explanation-bg: #1e3a8a;
-            --explanation-text: #bfdbfe;
+            --bg-color: #18191a;
+            --card-bg: #242526;
+            --text-primary: #e4e6eb;
+            --text-secondary: #b0b3b8;
+            --accent: #4599ff;
+            --success: #42b72a;
+            --error: #fa3e3e;
+            --explanation-bg: #2a3e50;
         }
 
-        * { box-sizing: border-box; transition: background-color 0.3s, color 0.3s; }
-        
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-color);
-            color: var(--text-color);
+            color: var(--text-primary);
             margin: 0;
-            padding: 20px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
+            transition: background 0.3s;
         }
 
         .header {
+            width: 100%;
+            max-width: 600px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            width: 100%;
-            max-width: 600px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            padding: 10px 0;
         }
 
-        .toggle-btn {
+        .mode-btn {
             background: none;
-            border: 2px solid var(--text-color);
-            color: var(--text-color);
-            padding: 8px 16px;
+            border: 1px solid var(--text-primary);
+            color: var(--text-primary);
+            padding: 5px 15px;
             border-radius: 20px;
             cursor: pointer;
-            font-weight: bold;
+            font-size: 0.9rem;
         }
 
-        .quiz-container {
+        .card {
             background-color: var(--card-bg);
-            border-radius: 16px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 20px;
             width: 100%;
             max-width: 600px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 15px;
         }
 
-        .progress {
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background-color: var(--bg-color);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--accent);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .stats {
             font-size: 0.9rem;
-            opacity: 0.7;
-            text-align: center;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: space-between;
         }
 
-        .question {
-            font-size: 1.4rem;
-            font-weight: 700;
+        .question-text {
+            font-size: 1.3rem;
+            font-weight: 600;
             line-height: 1.4;
-            text-align: center;
-            margin: 10px 0;
+            margin: 10px 0 20px 0;
         }
 
-        .options {
+        .options-grid {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
 
         .option-btn {
             background-color: var(--bg-color);
+            color: var(--text-primary);
             border: 2px solid transparent;
-            color: var(--text-color);
-            padding: 16px;
-            border-radius: 12px;
-            font-size: 1.1rem;
+            padding: 15px;
+            border-radius: 10px;
             text-align: left;
+            font-size: 1rem;
             cursor: pointer;
             transition: all 0.2s;
+            user-select: none;
         }
 
-        .option-btn:hover:not(:disabled) {
-            border-color: var(--accent-color);
-        }
+        .option-btn:active { transform: scale(0.98); }
 
         .option-btn.correct {
-            background-color: var(--success-color);
+            background-color: var(--success);
             color: white;
-            border-color: var(--success-color);
+            border-color: var(--success);
         }
 
         .option-btn.wrong {
-            background-color: var(--error-color);
+            background-color: var(--error);
             color: white;
-            border-color: var(--error-color);
+            border-color: var(--error);
         }
 
-        .explanation {
+        .explanation-box {
             background-color: var(--explanation-bg);
-            color: var(--explanation-text);
-            padding: 16px;
-            border-radius: 12px;
-            font-size: 1rem;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 0.95rem;
             line-height: 1.5;
-            display: none; /* Hidden by default */
+            display: none;
+            margin-top: 10px;
+            border-left: 4px solid var(--accent);
         }
 
-        .controls {
+        .nav-controls {
             display: flex;
             justify-content: space-between;
             margin-top: 20px;
+            gap: 10px;
         }
 
         .nav-btn {
-            background-color: var(--accent-color);
-            color: white;
+            flex: 1;
+            padding: 12px;
             border: none;
-            padding: 12px 24px;
             border-radius: 8px;
-            font-size: 1.2rem;
+            font-weight: bold;
+            font-size: 1rem;
             cursor: pointer;
-            disabled: opacity 0.5;
+            background-color: var(--accent);
+            color: white;
+            opacity: 1;
         }
-        
+
         .nav-btn:disabled {
-            opacity: 0.5;
+            background-color: var(--bg-color);
+            color: var(--text-secondary);
             cursor: not-allowed;
         }
 
-        /* Mobile optimizations */
-        @media (max-width: 480px) {
-            .question { font-size: 1.25rem; }
-            .option-btn { padding: 14px; font-size: 1rem; }
-        }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1>Révision Univ.</h1>
-        <button class="toggle-btn" onclick="toggleDarkMode()">🌙 Mode Nuit</button>
+        <h2 style="margin:0;">QCM Révision</h2>
+        <button class="mode-btn" onclick="toggleTheme()">🌗 Nuit</button>
     </div>
 
-    <div class="quiz-container">
-        <div class="progress" id="progress">Question 1 / 30</div>
-        
-        <div class="question" id="question-text">
-            Chargement...
+    <div class="card">
+        <div class="stats">
+            <span id="q-counter">Question 1/50</span>
+            <span id="score-counter">Score: 0</span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress"></div>
         </div>
 
-        <div class="options" id="options-container">
+        <div class="question-text" id="question">
+            Chargement des questions...
+        </div>
+
+        <div class="options-grid" id="options">
             </div>
 
-        <div class="explanation" id="explanation">
-            </div>
+        <div class="explanation-box" id="explanation"></div>
 
-        <div class="controls">
-            <button class="nav-btn" id="prev-btn" onclick="prevQuestion()">←</button>
-            <button class="nav-btn" id="next-btn" onclick="nextQuestion()">→</button>
+        <div class="nav-controls">
+            <button class="nav-btn" id="btn-prev" onclick="prevQ()">← Précédent</button>
+            <button class="nav-btn" id="btn-next" onclick="nextQ()">Suivant →</button>
         </div>
     </div>
 
-    <script>
-        // --- BASE DE DONNÉES DES QUESTIONS ---
-        // Tu peux copier-coller un bloc {} pour ajouter une question.
-        const questions = [
-            // PARTIE 1 : NATIONALISME & PARENTÉ
-            {
-                question: "Selon Edward Burnett Tylor, quel dilemme fondamental les premiers groupes humains ont-ils dû affronter ?",
-                options: ["Manger ou être mangé", "Se marier à l'extérieur ou être tué", "Prier ou combattre", "Migrer ou se sédentariser"],
-                answer: 1,
-                [cite_start]explanation: "Tylor postule que l'exogamie était la seule alternative à la guerre permanente : 'Se marier à l'extérieur ou être tué' (s'allier ou mourir)[cite: 1592, 1720]."
-            },
-            {
-                question: "Quelle fonction sociale principale remplit l'exogamie selon l'anthropologie politique ?",
-                options: ["Préserver la pureté du sang", "Transformer l'ennemi en parent", "Augmenter la population", "Renforcer le patriarcat"],
-                answer: 1,
-                explanation: "L'exogamie permet de créer des alliances avec l'extérieur. [cite_start]L'étranger n'est plus un ennemi mais devient un parent par alliance[cite: 1597, 1607]."
-            },
-            {
-                question: "Comment Benedict Anderson définit-il la nation ?",
-                options: ["Une réalité biologique ancestrale", "Une communauté imaginée, limitée et souveraine", "Un contrat social rationnel", "Une volonté divine"],
-                answer: 1,
-                [cite_start]explanation: "Anderson définit la nation comme une 'communauté politique imaginée', intrinsèquement limitée (frontières) et souveraine, née du capitalisme de l'imprimé[cite: 145, 150]."
-            },
-            {
-                question: "Quel concept Eric Hobsbawm utilise-t-il pour décrire les mythes et cérémonies nationaux (comme le kilt) ?",
-                options: ["L'héritage immuable", "La mémoire collective", "Les traditions inventées", "Le folklore authentique"],
-                answer: 2,
-                [cite_start]explanation: "Hobsbawm parle de 'traditions inventées' pour décrire comment le nationalisme fabrique un passé commun (souvent récent) pour légitimer l'ordre présent [cite: 128-130]."
-            },
-            {
-                question: "Selon Ernest Gellner, de quoi le nationalisme est-il le produit ?",
-                options: ["De l'âme ancestrale des peuples", "De la modernité industrielle", "Des guerres de religion", "De la structure familiale"],
-                answer: 1,
-                [cite_start]explanation: "Pour Gellner, le nationalisme est un produit de la modernité industrielle qui nécessite une main-d'œuvre homogénéisée et alphabétisée [cite: 132-134]."
-            },
-            {
-                question: "Dans la théorie du 'Droit maternel' de Bachofen, quelle est la caractéristique de la phase 'lunaire' ?",
-                options: ["Le patriarcat absolu", "Le nomadisme et la promiscuité", "L'agriculture et l'autorité des mères", "L'industrie et la science"],
-                answer: 2,
-                [cite_start]explanation: "La phase lunaire (Mutterrecht) correspond à l'agriculture, au culte de la fertilité (Déméter) et à l'autorité des mères [cite: 1569-1570]."
-            },
+<script>
+const quizData = [
+    // --- PARTIE 1 : ANTHROPOLOGIE & PARENTÉ ---
+    {
+        q: "Selon Edward Burnett Tylor, quel est le choix fondamental des premiers groupes humains ?",
+        opts: [
+            "Manger ou être mangé",
+            "Se marier à l'extérieur ou être tué",
+            "Prier ou combattre",
+            "Construire ou migrer"
+        ],
+        a: 1,
+        [cite_start]exp: "Tylor (1871) affirme que l'exogamie était la seule alternative à la guerre permanente : 'Se marier à l'extérieur ou être tué' (s'allier ou mourir) [cite: 282-283]."
+    },
+    {
+        q: "Quelle est la fonction sociale principale de l'exogamie ?",
+        opts: [
+            "Préserver la pureté de la race",
+            "Transformer l'ennemi en parent",
+            "Augmenter la démographie",
+            "Renforcer l'autorité du père"
+        ],
+        a: 1,
+        exp: "L'exogamie permet de créer des alliances politiques avec l'extérieur. [cite_start]L'étranger n'est plus un ennemi mais devient un parent par alliance[cite: 9, 332]."
+    },
+    {
+        q: "Qui est l'auteur de 'Ancient Law' (1861) décrivant le passage 'du statut au contrat' ?",
+        opts: [
+            "Henry James Sumner Maine",
+            "Lewis Morgan",
+            "Claude Lévi-Strauss",
+            "Johann Bachofen"
+        ],
+        a: 0,
+        [cite_start]exp: "Maine théorise le passage des sociétés anciennes (basées sur le statut/famille) aux sociétés modernes (basées sur l'individu et le contrat libre) [cite: 267-268]."
+    },
+    {
+        q: "Selon Bachofen, à quoi correspond la phase 'lunaire' (Mutterrecht) ?",
+        opts: [
+            "Au chaos et au nomadisme",
+            "À l'agriculture et l'autorité des mères",
+            "À la rationalité moderne",
+            "À la chasse et la guerre"
+        ],
+        a: 1,
+        [cite_start]exp: "La phase lunaire correspond à la sédentarisation, l'agriculture, le culte de la fertilité (Déméter) et l'autorité matriarcale [cite: 1047-1048]."
+    },
+    {
+        q: "Comment Clifford Geertz définit-il l'idéologie ?",
+        opts: [
+            "Comme un simple mensonge politique",
+            "Comme un système culturel et symbolique",
+            "Comme une science exacte",
+            "Comme une maladie mentale"
+        ],
+        a: 1,
+        [cite_start]exp: "Pour Geertz, l'idéologie est un système de symboles (comme une carte mentale) permettant de rendre compréhensible une réalité sociale complexe ou angoissante[cite: 287, 1100]."
+    },
 
-            // PARTIE 2 : HISTOIRE DU RACISME (EARLY MODERN)
-            {
-                question: "Quel double événement fondateur de la modernité occidentale a lieu en 1492 ?",
-                options: ["Chute de Rome et découverte de l'Amérique", "Prise de Grenade (purification interne) et Découverte de l'Amérique (expansion)", "Révolution française et fin de l'esclavage", "Naissance du protestantisme et imprimerie"],
-                answer: 1,
-                [cite_start]explanation: "1492 marque à la fois l'expulsion des Juifs/Musulmans d'Espagne (purification) et la conquête de l'Amérique, structurant le capitalisme mondial naissant [cite: 1337-1341]."
-            },
-            {
-                question: "Selon Silvia Federici, quel rôle a joué la chasse aux sorcières dans l'émergence du capitalisme ?",
-                options: ["Elle a éliminé les superstitions religieuses", "Elle a permis de discipliner le corps des femmes et détruire les solidarités communautaires", "Elle n'a eu aucun impact économique", "Elle a renforcé le pouvoir de l'Église uniquement"],
-                answer: 1,
-                [cite_start]explanation: "La chasse aux sorcières a servi à instaurer un nouvel ordre patriarcal et à transformer le corps des femmes en machines à reproduire la force de travail [cite: 1267-1269]."
-            },
-            {
-                question: "Qu'est-ce que la 'Limpieza de sangre' (pureté de sang) ?",
-                options: ["Une technique médicale du Moyen Âge", "Une idéologie espagnole excluant les Juifs et Musulmans convertis", "Un rituel aztèque", "Une loi française sur la nationalité"],
-                answer: 1,
-                [cite_start]explanation: "Née en Espagne, elle introduit une logique proto-raciale où la foi ne suffit plus ; l'ascendance biologique devient déterminante pour l'appartenance[cite: 1143, 1911]."
-            },
-            {
-                question: "Selon Eric Wolf, pourquoi n'y a-t-il pas de 'peuples sans histoire' ?",
-                options: ["Car tous les peuples écrivent des livres", "Car l'Europe a simplement invisibilisé les histoires des peuples colonisés", "Car l'histoire commence en 1900", "Car l'anthropologie a tout documenté"],
-                answer: 1,
-                [cite_start]explanation: "Wolf soutient que l'Europe a effacé les connexions et histoires des colonisés, les réduisant à des 'matières premières humaines' dans le système-monde [cite: 1307-1308]."
-            },
-            
-            // PARTIE 3 : RACISME SCIENTIFIQUE & BIOLOGISATION
-            {
-                question: "Comment le racisme change-t-il de nature au XVIIIe siècle ?",
-                options: ["Il disparaît avec les Lumières", "Il passe d'une justification religieuse à une justification scientifique/naturelle", "Il devient purement économique", "Il se focalise uniquement sur la langue"],
-                answer: 1,
-                [cite_start]explanation: "Le racisme se 'naturalise' : la hiérarchie ne se justifie plus par la religion (païen/croyant) mais par la biologie et la science (race inférieure/supérieure) [cite: 266-268]."
-            },
-            {
-                question: "Quelle est la thèse centrale de Gobineau dans son 'Essai sur l'inégalité des races humaines' ?",
-                options: ["Toutes les races sont égales", "Le métissage est l'avenir de l'humanité", "L'histoire est un processus de dégénérescence dû au métissage", "Le climat détermine seul le caractère des peuples"],
-                answer: 2,
-                [cite_start]explanation: "Gobineau théorise que toute civilisation naît de la race blanche et décline à cause du 'mélange' (métissage), qui cause la dégénérescence [cite: 530-532]."
-            },
-            {
-                question: "Qu'est-ce que la controverse de Valladolid a principalement débattu ?",
-                options: ["L'abolition de l'esclavage des Noirs", "Si les Amérindiens avaient une âme et pouvaient être convertis", "La forme de la Terre", "L'indépendance des colonies"],
-                answer: 1,
-                explanation: "Elle a débattu du statut des Indiens (ont-ils une âme ?). [cite_start]Les Africains, eux, n'ont même pas bénéficié de ce débat et ont été assignés au statut de marchandise [cite: 1220-1223]."
-            },
-            {
-                question: "Selon Carl von Linné, quelle caractéristique attribue-t-il à l'Homo Europaeus ?",
-                options: ["Paresseux et négligent", "Gouverné par les lois et inventif", "Gouverné par le caprice", "Colérique et obstiné"],
-                answer: 1,
-                [cite_start]explanation: "Linné classe l'Europaeus albus comme 'intelligent, inventif, gouverné par les lois', fusionnant description biologique et jugement moral[cite: 498]."
-            },
+    // --- PARTIE 2 : NATIONALISME ---
+    {
+        q: "Selon Benedict Anderson, qu'est-ce qu'une nation ?",
+        opts: [
+            "Une réalité biologique millénaire",
+            "Une communauté politique imaginée",
+            "Un don de Dieu",
+            "Une simple frontière administrative"
+        ],
+        a: 1,
+        [cite_start]exp: "Anderson définit la nation comme une 'communauté politique imaginée', intrinsèquement limitée et souveraine, rendue possible par le capitalisme de l'imprimé[cite: 105, 150]."
+    },
+    {
+        q: "Quel rôle jouent les 'traditions inventées' selon Eric Hobsbawm ?",
+        opts: [
+            "Elles ne servent à rien",
+            "Elles légitiment l'ordre présent en créant un passé mythique",
+            "Elles prouvent l'ancienneté réelle des nations",
+            "Elles sont purement décoratives"
+        ],
+        a: 1,
+        [cite_start]exp: "Hobsbawm montre que les États inventent des traditions (kilt, hymnes) pour créer une continuité historique factice et unifier la nation [cite: 128-130]."
+    },
+    {
+        q: "Pour Ernest Gellner, de quoi le nationalisme est-il le produit fonctionnel ?",
+        opts: [
+            "De la modernité industrielle",
+            "Des guerres de religion",
+            "De l'esprit du peuple (Volk)",
+            "De la découverte de l'Amérique"
+        ],
+        a: 0,
+        [cite_start]exp: "Le nationalisme répond aux besoins de l'industrie : une main-d'œuvre alphabétisée, mobile et culturellement homogène [cite: 132-140]."
+    },
+    {
+        q: "Comment le nationalisme utilise-t-il le langage de la parenté ?",
+        opts: [
+            "Il l'interdit formellement",
+            "Il utilise des métaphores comme 'Mère Patrie' ou 'Frères d'armes'",
+            "Il remplace la famille par l'entreprise",
+            "Il ne s'intéresse qu'à l'économie"
+        ],
+        a: 1,
+        [cite_start]exp: "La nation reprend le vocabulaire familial pour naturaliser le lien politique et susciter une loyauté émotionnelle forte (frères, mère, pères fondateurs)[cite: 18]."
+    },
+    {
+        q: "Quelle contradiction interne traverse l'anthropologie au XIXe siècle ?",
+        opts: [
+            "Elle est à la fois outil de domination coloniale et science critique de l'altérité",
+            "Elle est trop mathématique",
+            "Elle refuse d'étudier les sociétés non-européennes",
+            "Elle est purement biologique"
+        ],
+        a: 0,
+        [cite_start]exp: "L'anthropologie sert à administrer les colonies (savoir = pouvoir) mais certains anthropologues développent aussi le relativisme culturel qui humanise l'Autre [cite: 82-88]."
+    },
 
-            // PARTIE 4 : MONDIALISATION & NÉOLIBÉRALISME
-            {
-                question: "Quelle est la conséquence des crises de 1973 sur les politiques migratoires en Europe ?",
-                options: ["Ouverture totale des frontières", "Encouragement à l'immigration de travail", "Fermeture des frontières et fixation de la main-d'œuvre immigrée dans la précarité", "Retour massif des immigrés dans leur pays"],
-                answer: 2,
-                [cite_start]explanation: "Après 1973, l'Europe ferme ses frontières à l'immigration de travail, ce qui a pour effet paradoxal de fixer les immigrés présents dans une situation précaire [cite: 755-756]."
-            },
-            {
-                question: "Comment le néolibéralisme (Thatcher/Reagan) reconfigure-t-il la notion d'échec social ?",
-                options: ["C'est la faute de l'État", "C'est une conséquence du capitalisme", "C'est une responsabilité individuelle (manque de mérite)", "C'est la volonté de Dieu"],
-                answer: 2,
-                [cite_start]explanation: "Le néolibéralisme impose l'idée de méritocratie et de responsabilité individuelle, effaçant les causes structurelles (classe, race) de l'échec [cite: 825-827]."
-            },
-            {
-                question: "Qui a écrit 'La fin de l'histoire' en 1992 ?",
-                options: ["Samuel Huntington", "Francis Fukuyama", "Eric Hobsbawm", "Edward Said"],
-                answer: 1,
-                [cite_start]explanation: "Francis Fukuyama a théorisé que la démocratie libérale et le capitalisme représentaient le stade final de l'évolution politique humaine [cite: 912-915]."
-            },
-            {
-                question: "Quelle critique Gayatri Spivak adresse-t-elle aux élites nationalistes post-coloniales ?",
-                options: ["Elles sont trop radicales", "Elles risquent de reproduire l'exclusion sans donner de voix aux subalternes", "Elles rejettent trop la culture occidentale", "Elles sont trop dépendantes de l'URSS"],
-                answer: 1,
-                [cite_start]explanation: "Dans 'Can the Subaltern Speak?', Spivak avertit que l'élite parle au nom du peuple mais marginalise les voix les plus dominées (subalternes)[cite: 198, 217]."
-            },
-            {
-                question: "Qu'est-ce que la figure de la 'Top Girl' analysée par Angela McRobbie ?",
-                options: ["Une mannequin célèbre", "Un symbole de réussite méritocratique qui invisibilise les inégalités structurelles", "Une militante féministe radicale", "Une victime du patriarcat"],
-                answer: 1,
-                [cite_start]explanation: "La Top Girl est une figure de jeune femme active et consommatrice qui suggère que l'égalité est atteinte, rendant l'échec des autres femmes 'personnel'[cite: 847, 860]."
-            },
-            {
-                question: "Selon Samuel Huntington, quelle sera la nature des conflits après la Guerre Froide ?",
-                options: ["Économiques", "Idéologiques", "Civilisationnels (ex: Occident vs Islam)", "Technologiques"],
-                answer: 2,
-                [cite_start]explanation: "Huntington théorise le 'Choc des civilisations', affirmant que les conflits futurs seront culturels et religieux, notamment entre l'Occident et l'Islam [cite: 925-928]."
-            },
+    // --- PARTIE 3 : HISTOIRE DU RACISME I (1492-1700) ---
+    {
+        q: "Quels événements marquent l'année 1492 dans la genèse de la modernité ?",
+        opts: [
+            "La chute de Rome et la peste noire",
+            "La prise de Grenade (fin Reconquista) et la 'découverte' de l'Amérique",
+            "La Révolution française et l'indépendance américaine",
+            "La naissance de Luther et l'imprimerie"
+        ],
+        a: 1,
+        [cite_start]exp: "1492 marque la purification interne (expulsion des Juifs/Musulmans) et l'expansion externe (Amérique), fondant le système-monde moderne [cite: 483-487, 1337-1345]."
+    },
+    {
+        q: "Qu'est-ce que la 'Limpieza de sangre' ?",
+        opts: [
+            "Une technique médicale",
+            "Une obsession espagnole pour la pureté religieuse et généalogique",
+            "Un rituel maya",
+            "Un impôt sur le sang"
+        ],
+        a: 1,
+        [cite_start]exp: "C'est une idéologie d'exclusion visant les Juifs et Musulmans convertis, introduisant une logique proto-raciale (la foi ne suffit pas, il faut le 'sang') [cite: 1342-1351]."
+    },
+    {
+        q: "Quelle est la thèse de Silvia Federici sur la chasse aux sorcières ?",
+        opts: [
+            "C'était une hystérie religieuse sans but",
+            "Elle visait à discipliner le corps des femmes pour le capitalisme naissant",
+            "Elle n'a jamais existé",
+            "Elle a libéré les femmes du Moyen Âge"
+        ],
+        a: 1,
+        [cite_start]exp: "La chasse aux sorcières a servi à briser les solidarités communautaires et à assigner les femmes à la reproduction forcée de la main-d'œuvre [cite: 1475-1478]."
+    },
+    {
+        q: "Selon Eric Wolf, pourquoi n'y a-t-il pas de 'peuples sans histoire' ?",
+        opts: [
+            "Car l'Europe a effacé les histoires des peuples colonisés pour les dominer",
+            "Car tout le monde écrit des livres",
+            "Car l'histoire commence en 1900",
+            "Car les peuples colonisés étaient plus avancés"
+        ],
+        a: 0,
+        [cite_start]exp: "Wolf soutient que le concept de 'peuples sans histoire' est une construction idéologique pour justifier le vol des terres et des ressources [cite: 537-539, 1575]."
+    },
+    {
+        q: "Quel rôle joue le sucre dans l'histoire du capitalisme selon Sidney Mintz ?",
+        opts: [
+            "Il est anecdotique",
+            "Il relie l'esclavage aux Caraïbes à la classe ouvrière européenne",
+            "Il a appauvri l'Europe",
+            "Il a servi de monnaie en Chine"
+        ],
+        a: 1,
+        [cite_start]exp: "Le sucre illustre le système-monde : produit par des esclaves (périphérie), il fournit de l'énergie bon marché aux ouvriers européens (centre) [cite: 1602-1606]."
+    },
+    {
+        q: "Qu'est-ce que la Controverse de Valladolid ?",
+        opts: [
+            "Un débat sur l'âme des femmes",
+            "Un débat sur l'humanité des Amérindiens (ont-ils une âme ?)",
+            "Un traité de paix avec les Aztèques",
+            "La condamnation de Galilée"
+        ],
+        a: 1,
+        exp: "Elle débattait du statut des Indiens. [cite_start]Les Noirs n'ont même pas eu ce 'privilège' et ont été immédiatement assignés à l'esclavage [cite: 1427-1435]."
+    },
+    {
+        q: "Selon Aníbal Quijano, qu'est-ce que la 'colonialité du pouvoir' ?",
+        opts: [
+            "La fin de la colonisation",
+            "La persistance des hiérarchies raciales et épistémiques après l'indépendance",
+            "Le pouvoir des rois d'Espagne",
+            "Une théorie économique libérale"
+        ],
+        a: 1,
+        [cite_start]exp: "La colonialité désigne le fait que le système de classification racial et la domination économique perdurent même après la fin administrative des colonies[cite: 1485, 1644]."
+    },
 
-            // QUESTIONS MÉLANGÉES / CONCEPTS CLÉS
-            {
-                question: "Qu'est-ce que l'Orientalisme selon Edward Said ?",
-                options: ["L'étude objective de l'Asie", "Une construction discursive occidentale pour dominer l'Orient", "Un mouvement artistique du XIXe siècle", "La montée en puissance de la Chine"],
-                answer: 1,
-                [cite_start]explanation: "Said définit l'Orientalisme comme un système de représentations stéréotypées (l'Autre) permettant à l'Occident de se définir (le Soi) et de justifier sa domination [cite: 165-171]."
-            },
-            {
-                question: "Quelle fonction le sucre a-t-il joué dans le capitalisme mondial selon Sidney Mintz ?",
-                options: ["Aucune, c'est juste un aliment", "Il a illustré la connexion entre production périphérique (esclavage) et consommation ouvrière européenne", "Il a enrichi uniquement les pays du Sud", "Il a remplacé l'alcool"],
-                answer: 1,
-                [cite_start]explanation: "Le sucre incarne la 'colonialité', reliant l'esclavage dans les Caraïbes à la fourniture d'énergie bon marché pour les prolétaires d'Europe[cite: 1396, 1424]."
-            },
-            {
-                question: "Que signifie l'expression 'There is no such thing as society' de Margaret Thatcher ?",
-                options: ["La société est tout ce qui compte", "Il faut renforcer les liens sociaux", "Il n'y a que des individus et des familles (responsabilisation individuelle)", "Le socialisme est l'avenir"],
-                answer: 2,
-                [cite_start]explanation: "Cette phrase emblématique du néolibéralisme nie les structures sociales pour promouvoir l'individualisme pur et le marché[cite: 783, 837]."
-            },
-            {
-                question: "Comment le concept de 'race' est-il traité dans les sciences sociales modernes ?",
-                options: ["Comme une réalité biologique prouvée", "Comme une construction sociale et un rapport de pouvoir", "Comme un synonyme d'ethnie", "Comme une donnée obsolète sans impact"],
-                answer: 1,
-                [cite_start]explanation: "Bien que biologiquement invalide, la race est analysée comme un fait social ('racisme sans race') qui structure les hiérarchies et la domination[cite: 438, 569]."
-            },
-            {
-                question: "Qu'est-ce que l'hétaïrisme selon Bachofen ?",
-                options: ["Le règne des guerriers", "Une phase primitive de promiscuité sexuelle et de nomadisme", "L'organisation monastique", "Le mariage monogame strict"],
-                answer: 1,
-                [cite_start]explanation: "C'est la première phase théorisée par Bachofen, caractérisée par une absence de règles conjugales (promiscuité) et une vie nomade[cite: 1567]."
-            },
-            {
-                question: "Pourquoi l'anthropologie est-elle née au XIXe siècle ?",
-                options: ["Par simple curiosité scientifique", "Pour aider à l'administration coloniale et comprendre les 'primitifs' à soumettre", "Pour prouver l'égalité des races", "Pour étudier les sociétés industrielles"],
-                answer: 1,
-                [cite_start]explanation: "L'anthropologie naît dans un contexte colonial avec pour but (souvent) de comprendre les structures sociales locales pour mieux adapter le droit et la domination coloniale [cite: 30-31, 1507]."
-            },
-            {
-                question: "Quel est le lien entre le 'Consensus de Washington' (1989) et les pays du Sud ?",
-                options: ["Il a annulé toutes les dettes", "Il a imposé des politiques néolibérales (privatisations, austérité) via le FMI", "Il a favorisé le communisme", "Il a créé l'Union Africaine"],
-                answer: 1,
-                [cite_start]explanation: "Le Consensus de Washington désigne l'ensemble des recommandations néolibérales (ajustements structurels) imposées par le FMI aux économies en difficulté [cite: 784-790]."
-            },
-            {
-                question: "Selon Frantz Fanon, quel est le risque pour la bourgeoisie nationale après l'indépendance ?",
-                options: ["De devenir trop pauvre", "De devenir une 'bourgeoisie de robe' qui gère l'État pour son profit sans transformer la société", "De déclencher une guerre nucléaire", "De retourner à l'agriculture"],
-                answer: 1,
-                [cite_start]explanation: "Fanon critique cette bourgeoisie qui remplace le colonisateur sans changer les structures d'exploitation, menant à un État autoritaire et corrompu [cite: 211-212]."
-            },
-            {
-                question: "Quelle est la critique des Cultural Studies envers les médias ?",
-                options: ["Ils sont trop intellectuels", "Ils produisent de l'hégémonie et construisent une définition restrictive du 'nous' national", "Ils ne diffusent pas assez de sport", "Ils sont totalement neutres"],
-                answer: 1,
-                [cite_start]explanation: "Les Cultural Studies (Stuart Hall) analysent comment les médias encodent des idéologies dominantes et stéréotypent les minorités pour maintenir l'ordre social[cite: 241, 1821]."
-            },
-            {
-                question: "Qu'est-ce que l'accumulation primitive selon Marx (et repris dans le cours) ?",
-                options: ["Épargner de l'argent dans une tirelire", "Le processus violent (vol, esclavage, expropriation) qui a permis le décollage du capitalisme", "L'invention de la monnaie", "Le commerce équitable"],
-                answer: 1,
-                [cite_start]explanation: "C'est la phase initiale du capitalisme fondée sur la violence extra-économique : expropriation des paysans, esclavage colonial et pillage[cite: 1183, 1242]."
-            }
-        ];
+    // --- PARTIE 4 : RACISME SCIENTIFIQUE (XVIIIe-XIXe) ---
+    {
+        q: "Comment le racisme évolue-t-il au XVIIIe siècle (Lumières) ?",
+        opts: [
+            "Il disparaît grâce à la Raison",
+            "Il passe d'une justification religieuse à une justification scientifique/biologique",
+            "Il devient purement culturel",
+            "Il ne concerne que l'Asie"
+        ],
+        a: 1,
+        exp: "Le racisme se 'naturalise'. [cite_start]La science (biologie, taxonomie) remplace la religion pour justifier la hiérarchie des groupes humains[cite: 1686, 1799]."
+    },
+    {
+        q: "Comment Carl von Linné classe-t-il l'Homo Europaeus ?",
+        opts: [
+            "Paresseux et négligent",
+            "Intelligent, inventif et gouverné par les lois",
+            "Colérique et obstiné",
+            "Mélancolique et avare"
+        ],
+        a: 1,
+        [cite_start]exp: "Linné mélange description physique et jugement moral, attribuant à l'Européen l'intelligence et la loi, et à l'Africain la paresse et le caprice [cite: 1907-1910]."
+    },
+    {
+        q: "Quelle est la théorie de Gobineau dans son Essai sur l'inégalité des races ?",
+        opts: [
+            "Le métissage est une force",
+            "Toute civilisation décline à cause du mélange racial (dégénérescence)",
+            "Le climat seul détermine le caractère",
+            "Les races n'existent pas"
+        ],
+        a: 1,
+        [cite_start]exp: "Gobineau est le père du racisme biologique pessimiste : il croit que la civilisation naît de la race blanche et meurt par le métissage [cite: 1939-1941]."
+    },
+    {
+        q: "Quel paradoxe caractérise la position des Lumières (Condorcet, etc.) sur l'esclavage ?",
+        opts: [
+            "Ils soutiennent l'esclavage sans réserve",
+            "Ils condamnent l'esclavage moralement mais refusent la violence révolutionnaire des esclaves",
+            "Ils ignorent le problème",
+            "Ils vont tous combattre en Haïti"
+        ],
+        a: 1,
+        [cite_start]exp: "Ils défendent une abolition progressive au nom de la 'civilisation', mais craignent le renversement de l'ordre social par les Noirs eux-mêmes [cite: 1780-1785]."
+    },
+    {
+        q: "Comment la médecine du XIXe siècle considère-t-elle la femme ?",
+        opts: [
+            "Comme l'égale de l'homme",
+            "Comme une 'matrice de la race' dont il faut contrôler la reproduction",
+            "Comme un être purement spirituel",
+            "Elle ne s'y intéresse pas"
+        ],
+        a: 1,
+        exp: "Le corps des femmes devient un enjeu national. [cite_start]La médecine surveille leur fertilité pour éviter la 'dégénérescence' de la nation [cite: 1829-1831]."
+    },
+    {
+        q: "Qu'est-ce que l'antisémitisme moderne selon le cours ?",
+        opts: [
+            "Une critique théologique du judaïsme",
+            "Une racialisation du Juif, perçu comme une menace biologique et nationale",
+            "Un conflit territorial",
+            "Une invention du Moyen Âge"
+        ],
+        a: 1,
+        [cite_start]exp: "L'antisémitisme moderne quitte le terrain religieux pour devenir racial : le Juif est vu comme un corps étranger menaçant la santé de la nation [cite: 1962-1964]."
+    },
 
-        // --- LOGIQUE DU QUIZ ---
+    // --- PARTIE 5 : MONDIALISATION & NÉOLIBÉRALISME ---
+    {
+        q: "Quel impact a le choc pétrolier de 1973 sur l'immigration en Europe ?",
+        opts: [
+            "Ouverture totale des frontières",
+            "Fermeture des frontières et sédentarisation précaire des immigrés",
+            "Départ massif des immigrés",
+            "Augmentation des salaires"
+        ],
+        a: 1,
+        [cite_start]exp: "L'arrêt officiel de l'immigration de travail a eu pour effet paradoxal de fixer les immigrés sur place (regroupement familial), mais dans la précarité [cite: 716-718]."
+    },
+    {
+        q: "Qu'est-ce que le Consensus de Washington (1989) ?",
+        opts: [
+            "Un traité de paix",
+            "Un ensemble de réformes néolibérales imposées par le FMI aux pays du Sud",
+            "Une loi sur l'environnement",
+            "La création de l'Union Européenne"
+        ],
+        a: 1,
+        [cite_start]exp: "C'est la doctrine économique imposant privatisations, austérité et ouverture des marchés aux pays endettés du Sud [cite: 756-761]."
+    },
+    {
+        q: "Quelle phrase célèbre de Margaret Thatcher résume l'idéologie néolibérale ?",
+        opts: [
+            "L'État est la solution",
+            "There is no such thing as society",
+            "Workers of the world, unite",
+            "I have a dream"
+        ],
+        a: 1,
+        [cite_start]exp: "Cette phrase nie l'existence de structures sociales pour ne reconnaître que les individus et leur responsabilité personnelle[cite: 451, 809]."
+    },
+    {
+        q: "Comment le néolibéralisme explique-t-il l'échec social ?",
+        opts: [
+            "Par les inégalités de classe",
+            "Par le racisme structurel",
+            "Par un défaut de responsabilité individuelle (manque de mérite)",
+            "Par la malchance"
+        ],
+        a: 2,
+        [cite_start]exp: "L'idéologie méritocratique transforme les inégalités structurelles en échecs personnels, culpabilisant les individus [cite: 798-799]."
+    },
+    {
+        q: "Qu'est-ce que la figure de la 'Top Girl' (McRobbie) ?",
+        opts: [
+            "Une mannequin célèbre",
+            "Un symbole de réussite féminine qui masque les inégalités persistantes",
+            "Une militante féministe",
+            "Une victime du système"
+        ],
+        a: 1,
+        [cite_start]exp: "C'est l'image de la jeune femme performante et consommatrice, utilisée pour dire que le féminisme n'est plus nécessaire et que tout dépend de l'effort [cite: 815-820]."
+    },
+    {
+        q: "Quelle est la thèse de Francis Fukuyama dans 'La fin de l'histoire' (1992) ?",
+        opts: [
+            "Le monde va s'effondrer",
+            "Le triomphe définitif de la démocratie libérale et du capitalisme",
+            "Le retour des empires",
+            "La victoire du communisme"
+        ],
+        a: 1,
+        [cite_start]exp: "Fukuyama affirmait que l'humanité avait atteint son stade politique final avec le modèle occidental, délégitimant toute alternative [cite: 886-887]."
+    },
+    {
+        q: "Quelle théorie de Samuel Huntington s'oppose à celle de Fukuyama ?",
+        opts: [
+            "La paix perpétuelle",
+            "Le Choc des Civilisations",
+            "L'harmonie universelle",
+            "La fin du travail"
+        ],
+        a: 1,
+        [cite_start]exp: "Huntington prédit que les conflits post-Guerre froide seront culturels (Occident vs Islam/Chine), justifiant une posture sécuritaire [cite: 897-900]."
+    },
 
-        let currentQuestionIndex = 0;
-        let userAnswers = new Array(questions.length).fill(null); // Stocke les réponses pour la session
+    // --- PARTIE 6 : POST-COLONIALISME & CONCEPTS CLÉS ---
+    {
+        q: "Qu'est-ce que l'Orientalisme selon Edward Said ?",
+        opts: [
+            "L'étude des langues asiatiques",
+            "Une construction discursive occidentale pour dominer l'Orient",
+            "Un style de peinture",
+            "La politique étrangère de la Chine"
+        ],
+        a: 1,
+        [cite_start]exp: "Said montre que l'Orient est une invention de l'Occident, un miroir inversé permettant de justifier la domination coloniale [cite: 164-170]."
+    },
+    {
+        q: "Quelle question pose Gayatri Spivak dans son essai célèbre ?",
+        opts: [
+            "Can the Subaltern Speak?",
+            "Where is the revolution?",
+            "Who is the master?",
+            "Why is the world round?"
+        ],
+        a: 0,
+        [cite_start]exp: "Elle demande si les groupes les plus marginalisés (subalternes) peuvent se faire entendre, ou si les élites parlent toujours à leur place[cite: 195]."
+    },
+    {
+        q: "Quelle critique Frantz Fanon adresse-t-il à la bourgeoisie nationale africaine ?",
+        opts: [
+            "Elle est trop pauvre",
+            "Elle devient une classe parasite qui imite le colonisateur sans développer le pays",
+            "Elle est trop révolutionnaire",
+            "Elle rejette la culture occidentale"
+        ],
+        a: 1,
+        [cite_start]exp: "Dans 'Les Damnés de la Terre', Fanon critique cette élite qui gère l'État pour son profit personnel et reproduit l'exclusion coloniale [cite: 209-211]."
+    },
+    {
+        q: "Qu'est-ce que l'hybridité selon Homi Bhabha ?",
+        opts: [
+            "Un mélange biologique dangereux",
+            "Un espace de négociation culturelle qui déstabilise l'identité 'pure'",
+            "Une technologie agricole",
+            "Une perte d'identité"
+        ],
+        a: 1,
+        [cite_start]exp: "Bhabha voit l'hybridité comme une force créatrice qui montre que les cultures ne sont jamais pures, remettant en cause le nationalisme strict [cite: 222-226]."
+    },
+    {
+        q: "Que signifie le concept de 'racisme sans race' ?",
+        opts: [
+            "Le racisme a disparu",
+            "Le racisme utilise désormais des arguments culturels ('incompatibilité') plutôt que biologiques",
+            "C'est un racisme envers les animaux",
+            "C'est un mythe"
+        ],
+        a: 1,
+        [cite_start]exp: "Le mot 'race' est tabou, donc le discours raciste se reporte sur la culture, la religion ou le mode de vie pour exclure l'Autre [cite: 616-618]."
+    },
+    {
+        q: "Qu'est-ce que l''infra-droit' dans le contexte du racisme structurel ?",
+        opts: [
+            "Un droit inférieur pour les étrangers",
+            "Des pratiques discriminatoires non écrites mais efficaces",
+            "Le droit international",
+            "Le code de la route"
+        ],
+        a: 1,
+        [cite_start]exp: "Cela désigne les mécanismes informels (au travail, au logement) qui excluent les racisés sans que cela soit inscrit dans la loi officielle[cite: 636, 2081]."
+    },
+    {
+        q: "Pourquoi parle-t-on d''invisibilisation du groupe dominant' ?",
+        opts: [
+            "Parce qu'ils se cachent",
+            "Parce que le Blanc/Homme est vu comme la norme universelle et neutre",
+            "Parce qu'ils sont minoritaires",
+            "Parce qu'ils n'ont pas de culture"
+        ],
+        a: 1,
+        exp: "Le groupe dominant n'est jamais interrogé en tant que groupe (le 'Blanc', l'homme'). [cite_start]Seuls les 'Autres' sont vus comme ayant une race ou une spécificité [cite: 622-624]."
+    },
+    {
+        q: "Quel est le lien entre médias et hégémonie selon Stuart Hall ?",
+        opts: [
+            "Les médias disent toujours la vérité",
+            "Les médias construisent un consensus (hégémonie) qui marginalise les visions alternatives",
+            "Les médias sont purement divertissants",
+            "Les médias sont contrôlés par l'État"
+        ],
+        a: 1,
+        [cite_start]exp: "Les Cultural Studies montrent que les médias encodent les idéologies dominantes, rendant l'ordre social 'naturel' aux yeux du public[cite: 239, 462]."
+    },
+    {
+        q: "Qu'est-ce que la 'colonisation intérieure' ?",
+        opts: [
+            "Envahir son propre pays",
+            "Le traitement des classes populaires ou immigrées comme des populations colonisées au sein de la métropole",
+            "La décoration d'intérieur",
+            "Le tourisme"
+        ],
+        a: 1,
+        [cite_start]exp: "Ce concept décrit comment les mécanismes de domination coloniale (contrôle policier, ségrégation) sont appliqués aux banlieues et aux minorités en Europe[cite: 634, 2029]."
+    },
+    {
+        q: "Quelle était la vision d'Aimé Césaire sur le nazisme dans son 'Discours sur le colonialisme' ?",
+        opts: [
+            "C'était un accident de l'histoire",
+            "C'était l'application à l'Europe des méthodes coloniales jusque-là réservées aux non-Blancs",
+            "C'était la faute des États-Unis",
+            "Cela n'avait rien à voir avec la colonisation"
+        ],
+        a: 1,
+        [cite_start]exp: "Césaire affirme que ce que l'Europe ne pardonne pas à Hitler, c'est d'avoir traité les Blancs comme les colons traitaient les Africains ou les Indiens[cite: 155]."
+    },
 
-        // Mélanger les questions au démarrage (optionnel, désactivé ici pour garder l'ordre pédagogique, 
-        // décommente la ligne suivante pour mélanger)
-        // questions.sort(() => Math.random() - 0.5);
+    // --- QUESTIONS SUPPLÉMENTAIRES POUR ATTEINDRE 50 ---
+    {
+        q: "Que signifie 'Brautentführung' mentionné dans le cours ?",
+        opts: [
+            "Une fête de la bière",
+            "L'enlèvement rituel de la mariée (survivance)",
+            "Un contrat de mariage",
+            "Une danse traditionnelle"
+        ],
+        a: 1,
+        [cite_start]exp: "C'est une coutume (Allemagne/Autriche) d'enlèvement simulé de la mariée, relique symbolique des mariages par capture étudiés par McLennan[cite: 1032]."
+    },
+    {
+        q: "Quel auteur a écrit 'Les veines ouvertes de l'Amérique latine' ?",
+        opts: [
+            "Eduardo Galeano",
+            "Karl Marx",
+            "Adam Smith",
+            "Che Guevara"
+        ],
+        a: 0,
+        [cite_start]exp: "Cité dans le cours pour illustrer le pillage des ressources du continent au profit de l'Europe et des USA[cite: 730]."
+    },
+    {
+        q: "Qu'est-ce que le 'print capitalism' chez Anderson ?",
+        opts: [
+            "L'impression de billets de banque",
+            "La diffusion massive de livres/journaux en langue vernaculaire créant un sentiment d'appartenance",
+            "Le capitalisme financier",
+            "La publicité"
+        ],
+        a: 1,
+        [cite_start]exp: "Le capitalisme de l'imprimé a permis à des gens qui ne se connaissaient pas de se sentir liés en lisant les mêmes choses au même moment[cite: 146]."
+    },
+    {
+        q: "Quelle est la critique principale du terme 'seconde génération' pour les enfants d'immigrés ?",
+        opts: [
+            "C'est mathématiquement faux",
+            "Cela assigne une étrangeté permanente à des gens nés en France",
+            "C'est un terme trop positif",
+            "Cela ne veut rien dire"
+        ],
+        a: 1,
+        [cite_start]exp: "Ce terme maintient l'idée que ces citoyens ne sont pas totalement 'd'ici', prolongeant indéfiniment la condition d'immigré[cite: 635, 2006]."
+    },
+    {
+        q: "Selon le cours, qu'est-ce que la 'zone grise' post-Guerre froide ?",
+        opts: [
+            "Une zone météo",
+            "Des régions de chaos (Balkans, ex-URSS) où se développe un capitalisme illégal",
+            "L'Union Européenne",
+            "La zone euro"
+        ],
+        a: 1,
+        [cite_start]exp: "Ces zones de non-droit permettent des trafics (drogues, humains) qui nourrissent l'économie mondiale tout en justifiant des interventions militaires [cite: 873-877]."
+    },
+    {
+        q: "Qui est Olympe de Gouges dans le contexte du cours ?",
+        opts: [
+            "Une reine de France",
+            "Une révolutionnaire guillotinée pour avoir demandé l'égalité des sexes",
+            "Une esclavagiste",
+            "Une scientifique"
+        ],
+        a: 1,
+        exp: "Bien que non citée explicitement dans les sources OCR fournies, elle s'inscrit dans la critique des limites des Lumières (Droits de l'Homme vs Femme) évoquée."
+    },
+    {
+        q: "Que représente la figure de 'Caliban' chez Silvia Federici ?",
+        opts: [
+            "Le monstre de Shakespeare symbolisant la résistance du corps colonisé/prolétaire",
+            "Un roi africain",
+            "Un instrument de torture",
+            "Une île imaginaire"
+        ],
+        a: 0,
+        [cite_start]exp: "Titre du livre 'Caliban et la Sorcière', symbolisant la résistance des corps face à la discipline capitaliste[cite: 1446]."
+    },
+    {
+        q: "Pourquoi l'anthropologie s'est-elle intéressée à la parenté ?",
+        opts: [
+            "Pour faire des arbres généalogiques",
+            "Car c'est la première grille de lecture du 'nous' et du 'eux'",
+            "Pour prouver la supériorité européenne",
+            "C'était le seul sujet autorisé"
+        ],
+        a: 1,
+        [cite_start]exp: "La parenté est universelle et fournit le code de base pour inclure ou exclure des individus, préfigurant la nation[cite: 7, 330]."
+    },
+    {
+        q: "Quelle est la différence entre le racisme biologique et le racisme culturel ?",
+        opts: [
+            "Le premier tue, le second non",
+            "Le premier parle de sang/gènes, le second de 'mentalités' ou de 'valeurs'",
+            "Il n'y en a aucune",
+            "Le racisme culturel est légal"
+        ],
+        a: 1,
+        [cite_start]exp: "Le racisme culturel remplace l'hérédité biologique par l'héritage culturel jugé immuable et incompatible [cite: 613-618]."
+    },
+    {
+        q: "Quel est le but ultime de l'idéologie néolibérale selon le cours ?",
+        opts: [
+            "Le bonheur de tous",
+            "Naturaliser les inégalités économiques comme des évidences naturelles",
+            "Détruire le marché",
+            "Promouvoir la religion"
+        ],
+        a: 1,
+        [cite_start]exp: "Les discours néolibéraux visent à faire disparaître les causes structurelles des inégalités pour les rendre 'normales' et 'justes' (mérite)[cite: 453, 789]."
+    }
+];
 
-        const progressEl = document.getElementById('progress');
-        const questionTextEl = document.getElementById('question-text');
-        const optionsContainer = document.getElementById('options-container');
-        const explanationEl = document.getElementById('explanation');
-        const prevBtn = document.getElementById('prev-btn');
-        const nextBtn = document.getElementById('next-btn');
+// --- LOGIQUE DU QUIZ ---
 
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
-        }
+let currentQuestion = 0;
+let score = 0;
+let hasAnswered = false;
 
-        function loadQuestion(index) {
-            const q = questions[index];
-            
-            // Mise à jour de la barre de progression
-            progressEl.innerText = `Question ${index + 1} / ${questions.length}`;
-            
-            // Affichage de la question
-            questionTextEl.innerText = q.question;
+// Initialisation
+document.addEventListener("DOMContentLoaded", () => {
+    loadQuestion();
+    updateStats();
+});
 
-            // Reset des zones
-            optionsContainer.innerHTML = '';
-            explanationEl.style.display = 'none';
-            explanationEl.innerText = '';
+function toggleTheme() {
+    document.body.classList.toggle("dark-mode");
+    const btn = document.querySelector(".mode-btn");
+    btn.textContent = document.body.classList.contains("dark-mode") ? "☀️ Jour" : "🌗 Nuit";
+}
 
-            // Génération des options
-            q.options.forEach((opt, i) => {
-                const btn = document.createElement('button');
-                btn.classList.add('option-btn');
-                btn.innerText = opt;
-                btn.onclick = () => checkAnswer(i, index);
-                optionsContainer.appendChild(btn);
-            });
+function loadQuestion() {
+    hasAnswered = false;
+    const q = quizData[currentQuestion];
+    
+    // UI Updates
+    document.getElementById("question").textContent = q.q;
+    document.getElementById("explanation").style.display = "none";
+    document.getElementById("explanation").innerHTML = "";
+    document.getElementById("btn-next").disabled = true;
+    document.getElementById("btn-prev").disabled = currentQuestion === 0;
+    
+    // Options Generation
+    const optsContainer = document.getElementById("options");
+    optsContainer.innerHTML = "";
+    
+    q.opts.forEach((opt, index) => {
+        const btn = document.createElement("button");
+        btn.className = "option-btn";
+        btn.textContent = opt;
+        btn.onclick = () => checkAnswer(index, btn);
+        optsContainer.appendChild(btn);
+    });
 
-            // Si déjà répondu, restaurer l'état
-            if (userAnswers[index] !== null) {
-                restoreAnswerState(index);
-            }
+    updateProgressBar();
+}
 
-            // Gestion des boutons de navigation
-            prevBtn.disabled = index === 0;
-            nextBtn.disabled = index === questions.length - 1;
-        }
+function checkAnswer(selectedIndex, btnElement) {
+    if (hasAnswered) return;
+    hasAnswered = true;
 
-        function checkAnswer(selectedIndex, questionIndex) {
-            if (userAnswers[questionIndex] !== null) return; // Empêcher de changer la réponse
+    const q = quizData[currentQuestion];
+    const opts = document.querySelectorAll(".option-btn");
 
-            userAnswers[questionIndex] = selectedIndex;
-            const q = questions[questionIndex];
-            const buttons = optionsContainer.children;
+    if (selectedIndex === q.a) {
+        btnElement.classList.add("correct");
+        score++;
+        playFeedback(true);
+    } else {
+        btnElement.classList.add("wrong");
+        opts[q.a].classList.add("correct"); // Show correct one
+        playFeedback(false);
+    }
 
-            // Révéler la bonne et mauvaise réponse
-            if (selectedIndex === q.answer) {
-                buttons[selectedIndex].classList.add('correct');
-            } else {
-                buttons[selectedIndex].classList.add('wrong');
-                buttons[q.answer].classList.add('correct'); // Montrer la bonne réponse
-            }
+    // Show Explanation
+    const expBox = document.getElementById("explanation");
+    expBox.innerHTML = `<strong>Explication :</strong> ${q.exp}`;
+    expBox.style.display = "block";
 
-            // Afficher l'explication
-            explanationEl.innerHTML = "<strong>Explication :</strong> " + q.explanation;
-            explanationEl.style.display = 'block';
+    document.getElementById("btn-next").disabled = false;
+    updateStats();
+}
 
-            // Désactiver tous les boutons
-            for (let btn of buttons) {
-                btn.disabled = true;
-            }
-        }
+function nextQ() {
+    if (currentQuestion < quizData.length - 1) {
+        currentQuestion++;
+        loadQuestion();
+    }
+}
 
-        function restoreAnswerState(index) {
-            const selectedIndex = userAnswers[index];
-            const q = questions[index];
-            const buttons = optionsContainer.children;
+function prevQ() {
+    if (currentQuestion > 0) {
+        currentQuestion--;
+        loadQuestion();
+        // Reset state for review (simplified)
+        document.getElementById("btn-next").disabled = false;
+    }
+}
 
-            if (selectedIndex === q.answer) {
-                buttons[selectedIndex].classList.add('correct');
-            } else {
-                buttons[selectedIndex].classList.add('wrong');
-                buttons[q.answer].classList.add('correct');
-            }
+function updateProgressBar() {
+    const progress = ((currentQuestion + 1) / quizData.length) * 100;
+    document.getElementById("progress").style.width = `${progress}%`;
+}
 
-            explanationEl.innerHTML = "<strong>Explication :</strong> " + q.explanation;
-            explanationEl.style.display = 'block';
+function updateStats() {
+    document.getElementById("q-counter").textContent = `Question ${currentQuestion + 1}/${quizData.length}`;
+    document.getElementById("score-counter").textContent = `Score: ${score}`;
+}
 
-            for (let btn of buttons) {
-                btn.disabled = true;
-            }
-        }
+function playFeedback(isCorrect) {
+    // Optional: Add sound or vibration here if needed
+    if (navigator.vibrate) navigator.vibrate(isCorrect ? 50 : 200);
+}
 
-        function nextQuestion() {
-            if (currentQuestionIndex < questions.length - 1) {
-                currentQuestionIndex++;
-                loadQuestion(currentQuestionIndex);
-            }
-        }
-
-        function prevQuestion() {
-            if (currentQuestionIndex > 0) {
-                currentQuestionIndex--;
-                loadQuestion(currentQuestionIndex);
-            }
-        }
-
-        // Initialisation
-        loadQuestion(0);
-
-    </script>
+</script>
 </body>
 </html>
